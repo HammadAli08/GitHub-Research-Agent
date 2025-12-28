@@ -6,11 +6,11 @@
             "destination": "api/index.py"
         },
         {
-            "source": "/(.*)",
+            "source": "/(assets/.*)",
             "destination": "/$1"
         },
         {
-            "source": "/(.*)",
+            "source": "/((?!api/).*)",
             "destination": "/index.html"
         }
     ]
