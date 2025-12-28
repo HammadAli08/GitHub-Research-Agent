@@ -1,50 +1,70 @@
-# GitHub Research Agent 🚀
+# GitHub Intelligence & Research Tool 🚀
 
-A multi-agent system designed to perform deep technical research on GitHub repositories. Powered by **LangGraph**, **Groq (Llama 3.1)**, and the **GitHub REST API**.
+A high-performance, multi-agent system designed to perform deep technical research on GitHub repositories. This tool automates the process of auditing, analyzing, and "interrogating" any public repository on GitHub.
 
-## Features
-- **Code Analysis**: Deep dive into repository structure and core file purposes.
-- **Issue & PR Intelligence**: Analyze maintenance health and community demand.
-- **Trend & Risk Assessment**: Evaluate activity patterns and potential risks.
-- **Community Health**: Assessment of documentation, licenses, and ecosystem health.
-- **Interactive Search**: Discover repositories and initiate research with a single click.
-- **Context-Aware Chat**: Interrogate the research report with an AI assistant.
+Built with a state-of-the-art AI stack featuring **LangGraph**, **Groq (gpt-oss-120b)**, and **FastAPI**.
 
-## Tech Stack
-- **Frontend**: React (Vite, TypeScript, Tailwind CSS, Lucide Icons)
-- **Backend**: FastAPI, LangGraph, LangChain, Groq LLM
-- **API**: GitHub REST API (Fine-grained PAT supported)
+## 🌟 Key Features
 
-## Setup
+- **Multi-Agent Research Pipeline**: Uses specialized AI agents to analyze code structure, technical debt, maintenance health, and community trends in parallel.
+- **Smart Discovery**: Search for repositories by keyword, direct GitHub URL, or `owner/repo` patterns.
+- **Agentic Interrogation Chat**: A dedicated "ReAct" agent that has access to both a static research snapshot and **live GitHub tools** to fetch original, real-time data during conversations.
+- **Deep Technical Synthesis**: Generates a production-grade report covering risk scores, architectural patterns, and maintenance quality.
+- **Premium UI**: A sleek, minimal "Intelligence Dashboard" aesthetic built with React, Tailwind, and Lucide.
 
-### 1. Requirements
-- Python 3.10+
-- Node.js & npm
+## 🛠️ Tech Stack
 
-### 2. Environment Variables
+- **AI Orchestration**: LangGraph (Directed Acyclic Graphs for Agentic logic)
+- **LLM**: Groq (utilizing the `openai/gpt-oss-120b` model for deep reasoning)
+- **Backend**: FastAPI, LangChain, HTTPX
+- **Frontend**: React (Vite, TypeScript, Tailwind CSS, remark-gfm)
+- **API Integration**: GitHub REST API (optimized for Fine-grained PATs)
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Python**: 3.10+
+- **Node.js**: 18+ & npm
+
+### 2. Configure Environment
 Create a `.env` file in the root directory:
 ```env
-GROQ_API_KEY=your_groq_key
-GITHUB_TOKEN=your_fine_grained_pat
+GROQ_API_KEY=your_groq_api_key
+GITHUB_TOKEN=your_github_fine_grained_access_token
 ```
 
-### 3. Backend Installation
+### 3. Quick Install (Root Directory)
+I have provided a root-level script to install everything at once:
 ```bash
-pip install -r requirements.txt
+npm run install:all
+```
+
+### 4. Running the Application
+You will need two terminal windows running:
+
+**Terminal 1 (Backend):**
+```bash
 python main.py
 ```
 
-### 4. Frontend Installation
+**Terminal 2 (Frontend):**
 ```bash
-cd frontend
-npm install
-npm run dev
+npm run dev:frontend
 ```
+*Access the dashboard at `http://localhost:5173`.*
 
-## How it works
-The system uses a directed graph (LangGraph) to sequence research tasks:
-1. **Code Analysis**: Scans the file tree and summarizes key files.
-2. **Intelligence**: Fetches and evaluates recent issues and PRs.
-3. **Trends**: Checks commit history and stars.
-4. **Community**: Evaluates health metrics and languages.
-5. **Synthesis**: A Senior AI Systems Engineer agent compiles all data into a JSON report.
+## 🧠 How the Research Graph Works
+
+The system orchestrates research through a structured **LangGraph** workflow:
+
+1.  **Code Analysis**: Maps the file tree and summarizes core logic files (README, main, app.py, etc.).
+2.  **Issue Intelligence**: Fetches and evaluates the 15 most recent issues and PRs to gauge community demand and response time.
+3.  **Trend/Risk Node**: Analyzes commit frequency, star velocity, and licensing risks.
+4.  **Community Health**: Checks for documentation standards (Contributing, Code of Conduct, etc.).
+5.  **Senior Synthesis**: A final agent combines all research into a structured JSON report.
+
+## 💬 Live Interrogation
+The "Interrogation" chat isn't just a simple bot. It is a **Tool-Calling Agent**. If you ask it for something not in the initial report (e.g., *"What is written in the package.json file right now?"*), it will call the live GitHub API to fetch the **original results** and incorporate them into the answer.
+
+---
+*Created as part of a high-performance GitHub Intelligence project.*
