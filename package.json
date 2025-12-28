@@ -1,0 +1,11 @@
+{
+    "name": "github-research-tool",
+    "version": "1.0.0",
+    "description": "Full-stack GitHub Research Agent",
+    "scripts": {
+        "install:all": "pip install -r requirements.txt && cd frontend && npm install",
+        "dev:frontend": "cd frontend && npm run dev",
+        "dev:backend": "python main.py",
+        "build:frontend": "cd frontend && npm run build"
+    }
+}

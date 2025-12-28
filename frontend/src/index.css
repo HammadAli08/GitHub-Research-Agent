@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-white text-black;
+    }
+}
+
+.report-section {
+    @apply border-b border-black/10 py-6 last:border-0;
+}

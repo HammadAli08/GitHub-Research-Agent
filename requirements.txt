@@ -1,0 +1,13 @@
+langchain>=0.2.0
+langchain-core
+langchain-community
+langchain-groq
+langgraph
+fastapi
+uvicorn
+PyGithub
+python-dotenv
+httpx
+pydantic>=2.0.0
+pydantic-settings
+typing-extensions
