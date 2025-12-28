@@ -24,8 +24,8 @@ github_service = GitHubService()
 # In production, this would be Redis or a database
 REPORTS_CACHE = {}
 
-@app.get("/")
-async def root():
+@app.get("/health")
+async def health():
     return {"status": "online", "message": "GitHub Research Agent API"}
 
 @app.post("/search", response_model=RepoDiscoveryResponse)
