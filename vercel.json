@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "api/index.py"
+            "destination": "https://github-research-agent.onrender.com/$1"
         },
         {
             "source": "/(assets/.*)",

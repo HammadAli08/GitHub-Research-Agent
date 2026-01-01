@@ -4,39 +4,28 @@
 
 This project is configured for deployment on Render as a Web Service.
 
-1.  **Connect to Render**:
-    *   Go to [dashboard.render.com](https://dashboard.render.com/).
-    *   Click **New +** -> **Web Service**.
-    *   Connect your GitHub repository.
+### 1. Backend: Deploy to Render
+1. Create a New Web Service on [Render](https://dashboard.render.com/).
+2. Link your GitHub repository.
+3. Render will detect `render.yaml`. Use these settings:
+   - **Build Command**: `pip install -r backend/requirements.txt`
+   - **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port 10000`
+4. Add Environment Variables:
+   - `GITHUB_TOKEN`: Your Personal Access Token.
+   - `GROQ_API_KEY`: Your Groq API Key.
 
-2.  **Configuration**:
-    *   **Name**: `github-research-agent` (or your preferred name)
-    *   **Runtime**: `Python 3`
-    *   **Build Command**: `pip install -r requirements.txt`
-    *   **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`
+### 2. Frontend: Deploy to Vercel
+1. Create a New Project on [Vercel](https://vercel.com/).
+2. Link your GitHub repository.
+3. Vercel will detect `vercel.json`. It is configured to **proxy all `/api` requests to your Render URL**.
+4. Important: If you change your Render URL, update it in `vercel.json`.
 
-    *Alternatively, you can use the `render.yaml` by creating a "Blueprint" instance if you prefer Infrastructure as Code.*
+---
 
-3.  **Environment Variables**:
-    *   Add your `OPENAI_API_KEY` or `GROQ_API_KEY`, `GITHUB_TOKEN`, etc., in the "Environment" tab.
+## 🛠 Local Development
+1. **Install Dependencies**: `npm run install:all`
+2. **Setup Secrets**: Create a `.env` in the root (see `.env.example`).
+3. **Run Backend**: `npm run dev:backend`
+4. **Run Frontend**: `npm run dev:frontend`
 
-## Frontend Deployment (Vercel)
-
-The frontend is a React app that can be deployed on Vercel. It also includes a serverless function entry point for the backend in `api/index.py` if you prefer a monorepo deployment.
-
-1.  **Connect to Vercel**:
-    *   Go to [vercel.com](https://vercel.com/dashboard).
-    *   Click **Add New...** -> **Project**.
-    *   Import your GitHub repository.
-
-2.  **Configuration**:
-    *   **Framework Preset**: `Vite`
-    *   **Root Directory**: `frontend` (Important!)
-    *   **Build Command**: `npm run build`
-    *   **Output Directory**: `dist`
-    *   **Install Command**: `npm install`
-
-3.  **Environment Variables**:
-    *   Add `VITE_API_URL` pointing to your Render backend URL (e.g., `https://github-research-agent.onrender.com`).
-    
-    *Note: If you are using the Vercel serverless functions for the backend (via `api/index.py`), you might not need the external URL, but the Render deployment is recommended for long-running agent tasks.*
+The frontend is configured to hit `http://localhost:10000` via Vite proxy during development, and the Render URL in production via Vercel rewrites.
