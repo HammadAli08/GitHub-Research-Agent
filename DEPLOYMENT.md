@@ -13,6 +13,7 @@ This project is configured for deployment on Render as a Web Service.
 4. Add Environment Variables:
    - `GITHUB_TOKEN`: Your Personal Access Token.
    - `GROQ_API_KEY`: Your Groq API Key.
+   - `PYTHONPATH`: `.` (This is critical to find the `backend` module).
 
 ### 2. Frontend: Deploy to Vercel
 1. Create a New Project on [Vercel](https://vercel.com/).

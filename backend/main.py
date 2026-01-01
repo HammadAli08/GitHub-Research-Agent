@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Ensure the root directory is in the python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.models.schemas import RepoDiscoveryRequest, RepoDiscoveryResponse, AnalysisRequest, AnalysisReport, ChatRequest, ChatResponse
