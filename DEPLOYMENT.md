@@ -17,8 +17,9 @@ This project is configured for deployment on Render as a Web Service.
 ### 2. Frontend: Deploy to Vercel
 1. Create a New Project on [Vercel](https://vercel.com/).
 2. Link your GitHub repository.
-3. Vercel will detect `vercel.json`. It is configured to **proxy all `/api` requests to your Render URL**.
-4. Important: If you change your Render URL, update it in `vercel.json`.
+3. Configure Environment Variables:
+   - `VITE_API_URL`: Your Render backend URL (e.g., `https://github-research-agent.onrender.com`).
+4. Vercel will detect `vercel.json` and build the project using the provides environment variable.
 
 ---
 

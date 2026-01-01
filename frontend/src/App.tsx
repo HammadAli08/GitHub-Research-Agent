@@ -25,6 +25,8 @@ interface Report {
     // Extended fields if needed
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 export default function App() {
     const [query, setQuery] = useState('')
     const [repos, setRepos] = useState<Repo[]>([])
@@ -43,7 +45,7 @@ export default function App() {
         setLoading(true)
         setError(null)
         try {
-            const res = await axios.post('/api/search', { query })
+            const res = await axios.post(`${API_BASE}/search`, { query })
             setRepos(res.data.repositories)
             if (res.data.repositories.length === 0) {
                 setError("No repositories found for this query.")
@@ -63,7 +65,7 @@ export default function App() {
         setChatHistory([])
         setError(null)
         try {
-            const res = await axios.post('/api/analyze', { repo_full_name: fullName })
+            const res = await axios.post(`${API_BASE}/analyze`, { repo_full_name: fullName })
             setReport(res.data)
         } catch (err: any) {
             console.error(err)
@@ -82,7 +84,7 @@ export default function App() {
         setChatLoading(true)
         setError(null)
         try {
-            const res = await axios.post('/api/chat', {
+            const res = await axios.post(`${API_BASE}/chat`, {
                 repo_full_name: selectedRepo,
                 query: chatQuery,
                 history: chatHistory
