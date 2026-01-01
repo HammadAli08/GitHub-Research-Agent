@@ -31,6 +31,10 @@ github_service = GitHubService()
 # In production, this would be Redis or a database
 REPORTS_CACHE = {}
 
+@app.get("/")
+async def root():
+    return {"message": "GitHub Research Agent API is running. Use /health to check status."}
+
 @app.get("/health")
 async def health():
     return {"status": "online", "message": "GitHub Research Agent API"}
