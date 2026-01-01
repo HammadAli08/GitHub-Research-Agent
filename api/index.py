@@ -4,7 +4,7 @@ import os
 # Add the parent directory to sys.path so we can import from the root and 'backend'
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from main import app as fastapi_app
+from backend.main import app as fastapi_app
 
 # This is required for Vercel to correctly route requests to the FastAPI app
 # when using /api/(.*) rewrites

@@ -11,11 +11,17 @@ async def search_repos(query: str, language: str = None, min_stars: int = 0):
 
 @tool
 async def analyze_repo_structure(repo_full_name: str):
-    """Fetch the file tree of a repository to understand its structure and architecture."""
+    """Fetch the full file tree of a repository to understand its complete structure and architecture."""
     tree = await github.get_file_tree(repo_full_name)
-    # Filter for interesting files (README, package.json, main.py, etc.)
-    priority_files = [item["path"] for item in tree if any(p in item["path"].lower() for p in ["readme", "package.json", "requirements.txt", "main.py", "app.py", "index.ts", "cargo.toml"])]
-    return {"tree_summary": [item["path"] for item in tree[:50]], "key_files": priority_files[:20]}
+    # Filter for interesting structural files
+    priority_files = [item["path"] for item in tree if any(p in item["path"].lower() for p in ["readme", "package.json", "requirements.txt", "main.py", "app.py", "index.ts", "cargo.toml", "dockerfile", "docker-compose.yml", "go.mod"])]
+    
+    # We return up to 1000 paths so the LLM knows the full file system exists and can choose what to read
+    return {
+        "tree_summary": [item["path"] for item in tree[:1000]], 
+        "key_files": priority_files[:20],
+        "total_files": len(tree)
+    }
 
 @tool
 async def read_github_file(repo_full_name: str, path: str):

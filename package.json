@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "description": "Full-stack GitHub Research Agent",
     "scripts": {
-        "install:all": "pip install -r requirements.txt && cd frontend && npm install",
+        "install:all": "pip install -r backend/requirements.txt && cd frontend && npm install",
         "dev:frontend": "cd frontend && npm run dev",
-        "dev:backend": "python main.py",
+        "dev:backend": "python backend/main.py",
         "build:frontend": "cd frontend && npm install && npm run build",
         "build": "npm run build:frontend && cp -rv frontend/dist/* .",
         "vercel-build": "npm run build"

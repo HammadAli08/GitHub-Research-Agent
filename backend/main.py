@@ -96,18 +96,22 @@ async def chat(request: ChatRequest):
         "final_report": analysis_data.get("synthesis_report")
     }, indent=2)
     
-    system_message = f"""You are an expert GitHub Repository Analyst. 
+    system_message = f"""You are an expert GitHub Repository Analyst and Senior Systems Engineer. 
     You are currently investigating: {request.repo_full_name}
     
-    You have access to a STATIC RESEARCH SNAPSHOT below, but you also have TOOLS to fetch ORIGINAL/LIVE results from GitHub (like reading files, checking issues, or trends).
+    CAPABILITIES:
+    1. You have a STATIC RESEARCH SNAPSHOT for quick context.
+    2. You have LIVE TOOLS (like `read_github_file`) to fetch completion code for ANY file you see in the file tree.
     
     STATIC RESEARCH SNAPSHOT:
     {context}
     
     GUIDELINES:
-    1. Prefer the STATIC SNAPSHOT for speed if it has the answer.
-    2. If the user asks for something specific (e.g., 'What is in line 50 of file X?') or 'Get the latest original results', USE YOUR TOOLS.
-    3. Always be technically deep and cite your sources (snapshot vs live tool)."""
+    - If the snapshot has the answer, reply immediately.
+    - If the user asks about a specific file, class, or logic not in the snapshot, YOU MUST use the `read_github_file` tool.
+    - Be extremely technical. If you read a file, explain the logic line-by-line if relevant.
+    - If the user asks for a code walkthrough, fetch the file first.
+    - You have visibility into up to 1000 file paths in the repo structure. If you don't see a file in the 'tree_summary', you can still try to read it if the user mentions it."""
     
     messages = [
         SystemMessage(content=system_message)

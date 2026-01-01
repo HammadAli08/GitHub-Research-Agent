@@ -19,6 +19,9 @@ class GitHubService:
             self.headers["Authorization"] = f"Bearer {self.token}"
         else:
             print("Warning: GITHUB_TOKEN not found in .env. API rate limits will be severely restricted.")
+        
+        # Increased timeout for complex research tasks
+        self.timeout = httpx.Timeout(30.0, connect=10.0)
 
     async def search_repositories(self, query: str, language: Optional[str] = None, min_stars: int = 0) -> List[Dict[str, Any]]:
         # 1. Detection: Check if query is a GitHub URL or owner/repo pattern
@@ -61,7 +64,8 @@ class GitHubService:
             response = await client.get(
                 f"{self.base_url}/search/repositories",
                 params={"q": full_query, "sort": "stars", "order": "desc", "per_page": 10},
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             response.raise_for_status()
             items = response.json().get("items", [])
@@ -80,7 +84,11 @@ class GitHubService:
 
     async def get_repo_details(self, repo_full_name: str) -> Dict[str, Any]:
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"{self.base_url}/repos/{repo_full_name}", headers=self.headers)
+            response = await client.get(
+                f"{self.base_url}/repos/{repo_full_name}", 
+                headers=self.headers,
+                timeout=self.timeout
+            )
             if response.status_code == 404:
                 return {}
             response.raise_for_status()
@@ -88,7 +96,11 @@ class GitHubService:
 
     async def get_languages(self, repo_full_name: str) -> Dict[str, Any]:
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"{self.base_url}/repos/{repo_full_name}/languages", headers=self.headers)
+            response = await client.get(
+                f"{self.base_url}/repos/{repo_full_name}/languages", 
+                headers=self.headers,
+                timeout=self.timeout
+            )
             if response.status_code == 200:
                 return response.json()
             return {}
@@ -98,7 +110,8 @@ class GitHubService:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"{self.base_url}/repos/{repo_full_name}/community/profile",
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             if response.status_code == 200:
                 return response.json()
@@ -113,7 +126,8 @@ class GitHubService:
             response = await client.get(
                 f"{self.base_url}/repos/{repo_full_name}/git/trees/{branch}",
                 params={"recursive": 1 if recursive else 0},
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             response.raise_for_status()
             return response.json().get("tree", [])
@@ -122,7 +136,8 @@ class GitHubService:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"{self.base_url}/repos/{repo_full_name}/contents/{path}",
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             if response.status_code == 404:
                 return ""
@@ -137,7 +152,8 @@ class GitHubService:
             response = await client.get(
                 f"{self.base_url}/repos/{repo_full_name}/issues",
                 params={"state": state, "per_page": per_page, "sort": "updated", "direction": "desc"},
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             response.raise_for_status()
             return response.json()
@@ -147,7 +163,8 @@ class GitHubService:
             response = await client.get(
                 f"{self.base_url}/repos/{repo_full_name}/commits",
                 params={"per_page": per_page},
-                headers=self.headers
+                headers=self.headers,
+                timeout=self.timeout
             )
             response.raise_for_status()
             return response.json()

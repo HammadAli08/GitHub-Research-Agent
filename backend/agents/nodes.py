@@ -19,61 +19,87 @@ class AgentState(TypedDict):
     status: str
 
 def get_llm():
+    # Use llama-3.3-70b-versatile as it is highly stable on Groq
     return ChatGroq(
-        model="openai/gpt-oss-120b",
+        model="llama-3.3-70b-versatile",
         temperature=0.1,
         api_key=os.getenv("GROQ_API_KEY")
     )
 
 async def code_analysis_node(state: AgentState):
-    llm = get_llm()
-    repo = state["repo_full_name"]
-    
-    # 1. Analyze structure
-    struct = await analyze_repo_structure.ainvoke({"repo_full_name": repo})
-    
-    # 2. Read key files (README and one or two core files)
-    contents = []
-    for file_path in struct["key_files"][:3]: # Limit to prevent context bloat
-        content = await read_github_file.ainvoke({"repo_full_name": repo, "path": file_path})
-        if content:
-            # Sub-summary of file
-            prompt = f"Summarize the technical purpose of this file: {file_path}\n\nContent:\n{content[:4000]}"
-            res = await llm.ainvoke([HumanMessage(content=prompt)])
-            contents.append(f"File: {file_path}\nSummary: {res.content}")
-            
-    return {
-        "structure_analysis": struct,
-        "content_summaries": contents,
-        "status": "Code analysis complete."
-    }
+    try:
+        llm = get_llm()
+        repo = state["repo_full_name"]
+        
+        # 1. Analyze structure
+        struct = await analyze_repo_structure.ainvoke({"repo_full_name": repo})
+        
+        # 2. Read key files (README and one or two core files)
+        contents = []
+        for file_path in struct.get("key_files", [])[:3]:
+            try:
+                content = await read_github_file.ainvoke({"repo_full_name": repo, "path": file_path})
+                if content:
+                    prompt = f"Summarize the technical purpose of this file: {file_path}\n\nContent:\n{content[:4000]}"
+                    res = await llm.ainvoke([HumanMessage(content=prompt)])
+                    contents.append(f"File: {file_path}\nSummary: {res.content}")
+            except Exception as e:
+                print(f"Error reading/summarizing {file_path}: {e}")
+                continue
+                
+        return {
+            "structure_analysis": struct,
+            "content_summaries": contents,
+            "status": "Code analysis complete."
+        }
+    except Exception as e:
+        return {
+            "structure_analysis": {"tree_summary": [], "key_files": []},
+            "content_summaries": [f"Error during code analysis: {str(e)}"],
+            "status": f"Code analysis failed: {str(e)}"
+        }
 
 async def intelligence_node(state: AgentState):
-    repo = state["repo_full_name"]
-    intelligence = await get_repo_issues_intelligence.ainvoke({"repo_full_name": repo})
-    
-    return {
-        "issue_intelligence": intelligence,
-        "status": "Issue & PR intelligence gathering complete."
-    }
+    try:
+        repo = state["repo_full_name"]
+        intelligence = await get_repo_issues_intelligence.ainvoke({"repo_full_name": repo})
+        return {
+            "issue_intelligence": intelligence,
+            "status": "Issue & PR intelligence gathering complete."
+        }
+    except Exception as e:
+        return {
+            "issue_intelligence": [],
+            "status": f"Issue intelligence gathering failed: {str(e)}"
+        }
 
 async def trend_node(state: AgentState):
-    repo = state["repo_full_name"]
-    trends = await get_repo_trends_and_risks.ainvoke({"repo_full_name": repo})
-    
-    return {
-        "trend_analysis": trends,
-        "status": "Trend and risk analysis complete."
-    }
+    try:
+        repo = state["repo_full_name"]
+        trends = await get_repo_trends_and_risks.ainvoke({"repo_full_name": repo})
+        return {
+            "trend_analysis": trends,
+            "status": "Trend and risk analysis complete."
+        }
+    except Exception as e:
+        return {
+            "trend_analysis": {},
+            "status": f"Trend analysis failed: {str(e)}"
+        }
 
 async def community_node(state: AgentState):
-    repo = state["repo_full_name"]
-    health = await get_repo_community_health.ainvoke({"repo_full_name": repo})
-    
-    return {
-        "community_health": health,
-        "status": "Community health assessment complete."
-    }
+    try:
+        repo = state["repo_full_name"]
+        health = await get_repo_community_health.ainvoke({"repo_full_name": repo})
+        return {
+            "community_health": health,
+            "status": "Community health assessment complete."
+        }
+    except Exception as e:
+        return {
+            "community_health": {},
+            "status": f"Community health assessment failed: {str(e)}"
+        }
 
 async def synthesis_node(state: AgentState):
     llm = get_llm()
