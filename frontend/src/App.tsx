@@ -92,7 +92,14 @@ export default function App() {
             setChatHistory(prev => [...prev, { role: 'assistant', content: res.data.answer }])
         } catch (err: any) {
             console.error(err)
-            setError("Failed to get a response from the research assistant.")
+            const errorMessage = err.response?.data?.detail || "Failed to get a response from the research assistant.";
+            setError(errorMessage)
+
+            // Add error to chat history so user sees it in context too
+            setChatHistory(prev => [...prev, {
+                role: 'assistant',
+                content: `⚠️ **Error**: ${errorMessage}`
+            }])
         } finally {
             setChatLoading(false)
         }

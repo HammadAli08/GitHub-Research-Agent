@@ -88,63 +88,69 @@ from backend.agents.tools import read_github_file, get_repo_issues_intelligence,
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    analysis_data = REPORTS_CACHE.get(request.repo_full_name)
-    if not analysis_data:
-        raise HTTPException(status_code=404, detail="No research data found for this repository.")
-    
-    llm = get_llm()
-    tools = [read_github_file, get_repo_issues_intelligence, get_repo_trends_and_risks, get_repo_community_health]
-    
-    # Create a ReAct agent that can use tools to fetch live data if the user asks for something not in the snapshot
-    agent = create_react_agent(llm, tools)
-    
-    import json
-    context = json.dumps({
-        "structure": analysis_data.get("structure_analysis"),
-        "key_file_summaries": analysis_data.get("content_summaries"),
-        "issue_intelligence": analysis_data.get("issue_intelligence"),
-        "trends": analysis_data.get("trend_analysis"),
-        "final_report": analysis_data.get("synthesis_report")
-    }, indent=2)
-    
-    system_message = f"""You are an expert GitHub Repository Analyst and Senior Systems Engineer. 
-    You are currently investigating: {request.repo_full_name}
-    
-    CAPABILITIES:
-    1. You have a STATIC RESEARCH SNAPSHOT for quick context.
-    2. You have LIVE TOOLS (like `read_github_file`) to fetch completion code for ANY file you see in the file tree.
-    
-    STATIC RESEARCH SNAPSHOT:
-    {context}
-    
-    GUIDELINES:
-    - If the snapshot has the answer, reply immediately.
-    - If the user asks about a specific file, class, or logic not in the snapshot, YOU MUST use the `read_github_file` tool.
-    - Be extremely technical. If you read a file, explain the logic line-by-line if relevant.
-    - If the user asks for a code walkthrough, fetch the file first.
-    - You have visibility into up to 1000 file paths in the repo structure. If you don't see a file in the 'tree_summary', you can still try to read it if the user mentions it."""
-    
-    messages = [
-        SystemMessage(content=system_message)
-    ]
-    
-    # Add history
-    for msg in request.history:
-        if msg["role"] == "user":
-            messages.append(HumanMessage(content=msg["content"]))
-        else:
-            messages.append(AIMessage(content=msg["content"]))
-            
-    # Add current query
-    messages.append(HumanMessage(content=request.query))
-    
-    # Invoke the agent
-    result = await agent.ainvoke({"messages": messages})
-    
-    # The last message in the result is the answer
-    final_answer = result["messages"][-1].content
-    
-    return {"answer": final_answer}
+    try:
+        analysis_data = REPORTS_CACHE.get(request.repo_full_name)
+        if not analysis_data:
+            raise HTTPException(status_code=404, detail="No research data found for this repository. Please run an analysis first.")
+        
+        llm = get_llm()
+        tools = [read_github_file, get_repo_issues_intelligence, get_repo_trends_and_risks, get_repo_community_health]
+        
+        # Create a ReAct agent that can use tools to fetch live data if the user asks for something not in the snapshot
+        agent = create_react_agent(llm, tools)
+        
+        import json
+        context = json.dumps({
+            "structure": analysis_data.get("structure_analysis"),
+            "key_file_summaries": analysis_data.get("content_summaries"),
+            "issue_intelligence": analysis_data.get("issue_intelligence"),
+            "trends": analysis_data.get("trend_analysis"),
+            "final_report": analysis_data.get("synthesis_report")
+        }, indent=2)
+        
+        system_message = f"""You are an expert GitHub Repository Analyst and Senior Systems Engineer. 
+        You are currently investigating: {request.repo_full_name}
+        
+        CAPABILITIES:
+        1. You have a STATIC RESEARCH SNAPSHOT for quick context.
+        2. You have LIVE TOOLS (like `read_github_file`) to fetch completion code for ANY file you see in the file tree.
+        
+        STATIC RESEARCH SNAPSHOT:
+        {context}
+        
+        GUIDELINES:
+        - If the snapshot has the answer, reply immediately.
+        - If the user asks about a specific file, class, or logic not in the snapshot, YOU MUST use the `read_github_file` tool.
+        - Be extremely technical. If you read a file, explain the logic line-by-line if relevant.
+        - If the user asks for a code walkthrough, fetch the file first.
+        - You have visibility into up to 1000 file paths in the repo structure. If you don't see a file in the 'tree_summary', you can still try to read it if the user mentions it."""
+        
+        messages = [
+            SystemMessage(content=system_message)
+        ]
+        
+        # Add history
+        for msg in request.history:
+            if msg["role"] == "user":
+                messages.append(HumanMessage(content=msg["content"]))
+            else:
+                messages.append(AIMessage(content=msg["content"]))
+                
+        # Add current query
+        messages.append(HumanMessage(content=request.query))
+        
+        # Invoke the agent
+        result = await agent.ainvoke({"messages": messages})
+        
+        # The last message in the result is the answer
+        final_answer = result["messages"][-1].content
+        
+        return {"answer": final_answer}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in chat endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Research Assistant Error: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
