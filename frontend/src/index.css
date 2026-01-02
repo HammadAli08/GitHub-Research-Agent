@@ -9,5 +9,5 @@
 }
 
 .report-section {
-    @apply border-b border-black/10 py-6 last:border-0;
+    @apply border-b border-white/5 py-6 last:border-0;
 }

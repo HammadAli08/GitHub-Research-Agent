@@ -7,17 +7,17 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: "#ffffff",
-                foreground: "#000000",
-                muted: "#f4f4f5",
-                "muted-foreground": "#71717a",
-                border: "#e4e4e7",
-                "accent-deep": "#4F5C78",
-                "accent-primary": "#455B8F",
-                "seafoam": "#458F81",
-                "forest-dark": "#1C2926",
-                "teal-dark": "#05262B",
-                "slate-mist": "#5E7175",
+                background: "#0a0a0f",
+                foreground: "#ffffff",
+                muted: "#1e293b",
+                "muted-foreground": "#94a3b8",
+                border: "#334155",
+                "royal-main": "#0a0a0f",      // Deepest black
+                "royal-secondary": "#111118", // Panel background
+                "accent-gold": "#D4AF37",     // Metallic Gold
+                "accent-gold-dim": "#8A7224", // Muted Gold
+                "regal-blue": "#1e293b",      // Deep slate/blue
+                "noble-slate": "#cbd5e1",     // Text color
             },
         },
     },
