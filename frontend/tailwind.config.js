@@ -14,7 +14,7 @@ export default {
                 border: "#334155",
                 "royal-main": "#0a0a0f",      // Deepest black
                 "royal-secondary": "#111118", // Panel background
-                "accent-gold": "#D4AF37",     // Metallic Gold
+                "accent-gold": "#9CA677",     // Muted Sage/Gold (Updated)
                 "accent-gold-dim": "#8A7224", // Muted Gold
                 "regal-blue": "#1e293b",      // Deep slate/blue
                 "noble-slate": "#cbd5e1",     // Text color
